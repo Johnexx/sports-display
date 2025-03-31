@@ -13,11 +13,13 @@ exports.handler = async function () {
 
     const xml = await response.text();
 
-    console.log("RAW XML RESPONSE:\n", xml.substring(0, 500));
-
     const result = await xml2js.parseStringPromise(xml, { mergeAttrs: true });
 
-    if (!result.venue || !result.venue.fixtures || !result.venue.fixtures[0].fixture) {
+    if (
+      !result.venue ||
+      !result.venue.fixtures ||
+      !result.venue.fixtures[0].fixture
+    ) {
       return {
         statusCode: 200,
         body: JSON.stringify({
@@ -29,8 +31,9 @@ exports.handler = async function () {
 
     const fixtures = result.venue.fixtures[0].fixture.map(f => {
       return {
-        name: f.name?.[0] || "Unnamed Match",
-        startTime: f.start_time?.[0] || "Unknown Time"
+        title: f.title?.[0] || "Untitled",
+        description: f.description?.[0] || "No description",
+        startTimeLocal: f.startTimeLocal?.[0] || "Unknown time"
       };
     });
 
