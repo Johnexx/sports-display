@@ -12,20 +12,36 @@
       padding: 2rem;
       font-size: 1.5rem;
     }
+
     h1 {
       font-size: 2.5rem;
       text-align: center;
       margin-bottom: 1rem;
     }
+
     .fixture {
       background: #222;
       border-radius: 10px;
       padding: 1rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
-    .time {
+
+    .title {
+      font-size: 1.8rem;
       font-weight: bold;
       color: #00ffcc;
+      margin-bottom: 0.5rem;
+    }
+
+    .description {
+      font-size: 1.2rem;
+      color: #ccc;
+      margin-bottom: 0.3rem;
+    }
+
+    .time {
+      font-size: 1.2rem;
+      color: #aaa;
     }
   </style>
 </head>
@@ -35,23 +51,38 @@
 
   <script>
     async function loadFixtures() {
-      const res = await fetch('/.netlify/functions/get-fixtures');
-      const data = await res.json();
       const container = document.getElementById('fixtures');
-      container.innerHTML = '';
-      
-      data.fixtures.forEach(fix => {
-        const div = document.createElement('div');
-        div.className = 'fixture';
-        div.innerHTML = `
-          <div><span class="time">${fix.startTime}</span> - ${fix.name}</div>
-        `;
-        container.appendChild(div);
-      });
+      container.innerHTML = 'Loading...';
+
+      try {
+        const res = await fetch('/.netlify/functions/get-fixtures');
+        const data = await res.json();
+
+        if (data.error) {
+          container.innerHTML = `<p>Error: ${data.error}</p>`;
+          return;
+        }
+
+        container.innerHTML = '';
+
+        data.fixtures.forEach(fix => {
+          const div = document.createElement('div');
+          div.className = 'fixture';
+          div.innerHTML = `
+            <div class="title">${fix.title}</div>
+            <div class="description">${fix.description}</div>
+            <div class="time">${fix.startTimeLocal}</div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (error) {
+        container.innerHTML = `<p style="color: red;">Failed to load fixtures.</p>`;
+        console.error(error);
+      }
     }
 
     loadFixtures();
-    setInterval(loadFixtures, 60000); // refresh every 60s
+    setInterval(loadFixtures, 60000); // Refresh every 60 seconds
   </script>
 </body>
 </html>
