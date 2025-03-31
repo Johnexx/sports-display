@@ -1,0 +1,8 @@
+{
+  "name": "sports-display",
+  "version": "1.0.0",
+  "dependencies": {
+    "node-fetch": "^2.6.9",
+    "xml2js": "^0.5.0"
+  }
+}
